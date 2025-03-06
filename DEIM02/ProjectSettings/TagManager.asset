@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Bottle
   - Book
+  - Key
+  - PuertaTrastero
+  - TrozosDePapel
+  - CofreCandelabro
+  - KeyCofre
   layers:
   - Default
   - TransparentFX

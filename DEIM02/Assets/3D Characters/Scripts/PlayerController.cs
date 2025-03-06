@@ -12,16 +12,33 @@ public class PlayerController : MonoBehaviour
     private bool moving;
     private bool canAttack;
 
+    //PUZZLE 2
+
+    public bool tieneLlaveTrastero;
+    public bool tieneLlaveCofre;
+    [SerializeField] GameObject puertaTrastero;
+
+    //PUZZLE 3
+    public int trozosDePapelRecolectados = 0; // Cuenta los trozos de papel recolectados
+    [SerializeField] public GameObject panelClave; // Referencia al Canvas donde se muestra la clave
+    public GameObject[] trozosDePapel; // Los tres trozos de papel en el juego
+    [SerializeField] GameObject tapaCofre;
+
+
 
     void Start()
     {
         canAttack = true;
         rb = GetComponent<Rigidbody>();
+        tieneLlaveTrastero = false;
+
+        panelClave.SetActive(false);
     }
 
     void Update()
     {
         PlayerMovement();
+        
 
     }
 
@@ -66,4 +83,70 @@ public class PlayerController : MonoBehaviour
 
         canAttack = true;
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Key"))
+        {
+            //if (Input.GetKeyDown(KeyCode.F))
+            //{
+            print("PulsaF");
+            tieneLlaveTrastero = true;
+            Destroy(other.gameObject);
+            //}
+
+
+        }if (other.gameObject.CompareTag("KeyCofre"))
+        {
+            //if (Input.GetKeyDown(KeyCode.F))
+            //{
+            print("PulsaF");
+            tieneLlaveCofre = true;
+            Destroy(other.gameObject);
+            //}
+
+
+        }
+
+        if (other.gameObject.CompareTag("PuertaTrastero") && tieneLlaveTrastero)
+        {
+            puertaTrastero.transform.Rotate(0, 90f, 0);
+
+        }
+
+        if (other.gameObject.CompareTag("CofreCandelabro") && tieneLlaveCofre)
+        {
+             tapaCofre.transform.Rotate(-90f, 0, 0);
+
+        }
+
+        // Detecta la colisión con los trozos de papel
+        if (other.CompareTag("TrozosDePapel"))
+        {
+            TrozosDePapel();
+            // Desactiva el trozo de papel recogido
+
+            other.gameObject.SetActive(false);
+        }
+    }
+
+    public void TrozosDePapel()
+    {
+
+        // El jugador recoge un trozo de papel
+        trozosDePapelRecolectados++;
+
+        
+
+        // Verifica si se han recogido todos los trozos de papel
+        if (trozosDePapelRecolectados == 3)
+        {
+            
+                // Muestra el Canvas con la clave
+                //panelClave.SetActive(true);
+
+                            
+        }
+    }
+
 }

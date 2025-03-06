@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class inventario : MonoBehaviour
 {
-
+    /*
     public bool objectGrabbed;
     //[SerializeField] public GameObject item;
     [SerializeField] public Transform objectParent;
@@ -94,5 +94,5 @@ public class inventario : MonoBehaviour
         colliderDelObjectoTrigger = null;
 
     }
-
+    */
 }
