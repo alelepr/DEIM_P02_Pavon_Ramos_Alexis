@@ -11,6 +11,7 @@ TagManager:
   - TrozosDePapel
   - CofreCandelabro
   - KeyCofre
+  - Candle
   layers:
   - Default
   - TransparentFX
