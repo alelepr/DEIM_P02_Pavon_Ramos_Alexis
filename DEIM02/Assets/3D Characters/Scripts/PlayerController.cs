@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
     //PUZZLE 3
     public int trozosDePapelRecolectados = 0; // Cuenta los trozos de papel recolectados
-    [SerializeField] public GameObject panelClave; // Referencia al Canvas donde se muestra la clave
+    [SerializeField] public GameObject mapPanel; // Referencia al Canvas donde se muestra la clave
     public GameObject[] trozosDePapel; // Los tres trozos de papel en el juego
     [SerializeField] GameObject tapaCofre;
     public bool isOpened;
@@ -41,6 +41,10 @@ public class PlayerController : MonoBehaviour
     public GameObject vela;
     public bool chestOpened;
 
+    GameManager gameManager;
+
+    public bool mapaActivo;
+
 
 
 
@@ -51,7 +55,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         tieneLlaveTrastero = false;
         vela.SetActive(false);
-        panelClave.SetActive(false);
+        mapPanel.SetActive(false);
     }
 
     void Update()
@@ -78,6 +82,11 @@ public class PlayerController : MonoBehaviour
             }
                 
 
+        }
+
+        if (Input.GetKeyDown(KeyCode.M) && mapaActivo)
+        {
+            gameManager.mapPanelUp();
         }
 
     }
@@ -171,15 +180,13 @@ public class PlayerController : MonoBehaviour
         trozosDePapelRecolectados++;
 
         
-
         // Verifica si se han recogido todos los trozos de papel
         if (trozosDePapelRecolectados == 3)
         {
-            
-                // Muestra el Canvas con la clave
-                //panelClave.SetActive(true);
+            gameManager.mapPanelUp();
+            mapaActivo = true;
 
-                            
+            
         }
     }
     public void ActivarGiro()

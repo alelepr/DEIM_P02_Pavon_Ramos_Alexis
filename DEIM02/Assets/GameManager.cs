@@ -12,12 +12,14 @@ public class GameManager : MonoBehaviour
     public GameObject panelInicio;
     public GameObject panelPausa;
     public GameObject panelControl;
+    public GameObject mapPanel;
     AudioManager audioManager;
 
     public bool controlPanelMenuIsActive;
 
 
     public bool paused;
+    private bool mapIsActive;
 
 
     // Start is called before the first frame update
@@ -126,6 +128,21 @@ public class GameManager : MonoBehaviour
         }
 
     }
+    
+    public void mapPanelUp()
+    {
+        if (mapIsActive == false)
+        {
+            mapIsActive = true;
+            mapPanel.SetActive(true);
+        }
+        else
+        {
+            mapIsActive = false;
+
+        }
+
+    }
       
 
     public void ControlMenuOut()
@@ -133,6 +150,13 @@ public class GameManager : MonoBehaviour
         controlPanelMenuIsActive = false;
         panelControl.SetActive(false);
         panelPausa.SetActive(true);
+
+    }
+    
+    public void MapOut()
+    {
+        mapIsActive = false;
+        mapPanel.SetActive(false);
 
     }
 }
