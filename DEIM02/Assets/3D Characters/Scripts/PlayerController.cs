@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections;
+using JetBrains.Annotations;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,73 +14,110 @@ public class PlayerController : MonoBehaviour
 
     private bool moving;
     private bool canAttack;
+    public bool puedeCogerLlaveTrastero;
+    [SerializeField] GameObject llaveTrastero;
+    [SerializeField] GameObject llaveCofre;
+    public bool colisionaConObjeto;
 
     //PUZZLE 2
 
     public bool tieneLlaveTrastero;
     public bool tieneLlaveCofre;
     [SerializeField] GameObject puertaTrastero;
+    
 
     //PUZZLE 3
     public int trozosDePapelRecolectados = 0; // Cuenta los trozos de papel recolectados
     [SerializeField] public GameObject panelClave; // Referencia al Canvas donde se muestra la clave
     public GameObject[] trozosDePapel; // Los tres trozos de papel en el juego
     [SerializeField] GameObject tapaCofre;
+    public bool isOpened;
+    public bool isChestOpened;
+    public float openAngle = 90f;
+    public float openSpeed = 0.4f;
+
+    private GameObject objetoColisionado; // Declaramos una variable para guardar el GameObject
+
+    public GameObject vela;
+    public bool chestOpened;
+
 
 
 
     void Start()
     {
+        isOpened = false;
         canAttack = true;
         rb = GetComponent<Rigidbody>();
         tieneLlaveTrastero = false;
-
+        vela.SetActive(false);
         panelClave.SetActive(false);
     }
 
     void Update()
     {
         PlayerMovement();
-        
+
+        if (Input.GetKeyDown(KeyCode.F) && colisionaConObjeto)
+        {
+            switch (objetoColisionado.tag)
+            {
+                case "Key":
+
+                    colisionaConObjeto = false;
+                    tieneLlaveTrastero = true;
+                    Destroy(llaveTrastero);
+                    break; 
+                
+                case "KeyCofre":
+
+                    colisionaConObjeto = false;
+                    tieneLlaveCofre = true;
+                    Destroy(llaveCofre);
+                    break;
+            }
+                
+
+        }
 
     }
 
     private void PlayerMovement()
     {
         moving = false;
-         
-        //inputs
+
+        // Inputs
         float horInput = Input.GetAxisRaw("Horizontal") * speed;
         float verInput = Input.GetAxisRaw("Vertical") * speed;
 
-        //camera direction
+        // Direcci贸n de la c谩mara
         Vector3 camForward = cam.forward;
         Vector3 camRight = cam.right;
 
         camForward.y = 0;
         camRight.y = 0;
 
-
-        //creating relative cam direction
+        // Crear direcci贸n relativa a la c谩mara
         Vector3 forwardRelative = verInput * camForward;
         Vector3 rightRelative = horInput * camRight;
 
         Vector3 moveDir = forwardRelative + rightRelative;
 
-        //movement
+        // Movimiento
         rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
 
-        transform.forward = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
-      
-               
-       /* 
-        Vector3 rotation = transform.rotation.eulerAngles;
-        rotation.x = 0;
-        transform.rotation = Quaternion.Euler(rotation);
-        anim.SetBool("moving", moving);*/
-
+        // Mantener la 煤ltima direcci贸n si el jugador deja de moverse respetando solo el eje Y
+        if (moveDir.magnitude > 0)
+        {
+            Vector3 direction = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).normalized;
+            if (direction.magnitude > 0)
+            {
+                transform.rotation = Quaternion.Euler(0, Quaternion.LookRotation(direction).eulerAngles.y, 0);
+            }
+        }
     }
+
+
     public void AttackEnded()
     {
 
@@ -88,39 +128,33 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Key"))
         {
-            //if (Input.GetKeyDown(KeyCode.F))
-            //{
-            print("PulsaF");
-            tieneLlaveTrastero = true;
-            Destroy(other.gameObject);
-            //}
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject; // Guardamos el GameObject que colision贸
 
 
-        }if (other.gameObject.CompareTag("KeyCofre"))
+        }
+
+        if (other.gameObject.CompareTag("KeyCofre"))
         {
-            //if (Input.GetKeyDown(KeyCode.F))
-            //{
-            print("PulsaF");
-            tieneLlaveCofre = true;
-            Destroy(other.gameObject);
-            //}
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject; // Guardamos el GameObject que colision贸
 
 
         }
 
         if (other.gameObject.CompareTag("PuertaTrastero") && tieneLlaveTrastero)
         {
-            puertaTrastero.transform.Rotate(0, 90f, 0);
+            ActivarGiro();
 
         }
 
         if (other.gameObject.CompareTag("CofreCandelabro") && tieneLlaveCofre)
         {
-             tapaCofre.transform.Rotate(-90f, 0, 0);
+             AbrirCofre();
 
         }
 
-        // Detecta la colisi髇 con los trozos de papel
+        // Detecta la colisi贸n con los trozos de papel
         if (other.CompareTag("TrozosDePapel"))
         {
             TrozosDePapel();
@@ -148,5 +182,67 @@ public class PlayerController : MonoBehaviour
                             
         }
     }
+    public void ActivarGiro()
+    {
+        if (isOpened == false)
+        {
+            StartCoroutine(OpenDoor());
+
+        }
+
+    }public void AbrirCofre()
+    {
+        if (isChestOpened == false)
+        {
+            StartCoroutine(OpenChest());
+
+        }
+
+    }
+
+
+    public IEnumerator OpenDoor()
+    {
+        isOpened = true;
+        Quaternion startRotation = puertaTrastero.transform.rotation;
+        Quaternion targetRotation = Quaternion.Euler(0, openAngle, 0) * startRotation;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < 1f)
+        {
+            puertaTrastero.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime);
+            elapsedTime += Time.deltaTime * openSpeed;
+            yield return null;
+        }
+
+        puertaTrastero.transform.rotation = targetRotation;
+
+    }public IEnumerator OpenChest()
+    {
+        isChestOpened = true;
+        Quaternion startRotation = tapaCofre.transform.rotation;
+        Quaternion targetRotation = Quaternion.Euler(openAngle, 0, 0) * startRotation;
+        float elapsedTime = 0f;
+        
+
+        while (elapsedTime < 1f)
+        {
+            tapaCofre.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime);
+            elapsedTime += Time.deltaTime * openSpeed;
+            vela.SetActive(true);
+            yield return null;
+        }
+
+        tapaCofre.transform.rotation = targetRotation;
+        chestOpened = true;
+
+        if (chestOpened)
+        {
+            
+        }
+    }
+
+        
+
 
 }
