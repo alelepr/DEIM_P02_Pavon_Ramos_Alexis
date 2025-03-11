@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
     public int trozosDePapelRecolectados = 0;
 
     [SerializeField] public GameObject mapPanel;
+    [SerializeField] public GameObject mLetter;
     [SerializeField] public GameObject buttonPickUp;
     [SerializeField] public GameObject buttonOpen;
 
@@ -261,6 +262,11 @@ public class PlayerController : MonoBehaviour
     public void TrozosDePapel()
     {
         trozosDePapelRecolectados++;
+
+        if (trozosDePapelRecolectados == 3)
+        {
+            mLetter.SetActive(true);
+        }
     }
 
     public void ActivarGiro()
