@@ -7,23 +7,25 @@ public class PlayerController : MonoBehaviour
 {
 
     [SerializeField]  float speed;
-    //[SerializeField] private Transform playerPointer;
-    [SerializeField] private Animator anim;
+    [SerializeField] public Animator anim;
     Rigidbody rb;
     [SerializeField] Transform cam;
 
     private bool moving;
-    private bool canAttack;
+
     public bool puedeCogerLlaveTrastero;
     [SerializeField] GameObject llaveTrastero;
     [SerializeField] GameObject llaveCofre;
+    [SerializeField] GameObject llaveHabitacion;
     public bool colisionaConObjeto;
 
-    //PUZZLE 2
+   
 
     public bool tieneLlaveTrastero;
     public bool tieneLlaveCofre;
+    public bool tieneLlaveHabitacion;
     [SerializeField] GameObject puertaTrastero;
+    [SerializeField] GameObject puertaHabitacion;
     
 
     //PUZZLE 3
@@ -32,9 +34,13 @@ public class PlayerController : MonoBehaviour
     public GameObject[] trozosDePapel; // Los tres trozos de papel en el juego
     [SerializeField] GameObject tapaCofre;
     public bool isOpened;
+    public bool isOpenedHab;
     public bool isChestOpened;
     public float openAngle = 90f;
     public float openSpeed = 0.4f;
+
+    float horInput;
+    float verInput;
 
     private GameObject objetoColisionado; // Declaramos una variable para guardar el GameObject
 
@@ -48,19 +54,24 @@ public class PlayerController : MonoBehaviour
 
 
 
+
     void Start()
     {
+        moving = false;
         isOpened = false;
-        canAttack = true;
         rb = GetComponent<Rigidbody>();
         tieneLlaveTrastero = false;
         vela.SetActive(false);
         mapPanel.SetActive(false);
+        anim = GetComponent<Animator>();
     }
 
     void Update()
     {
         PlayerMovement();
+
+        
+
 
         if (Input.GetKeyDown(KeyCode.F) && colisionaConObjeto)
         {
@@ -79,6 +90,31 @@ public class PlayerController : MonoBehaviour
                     tieneLlaveCofre = true;
                     Destroy(llaveCofre);
                     break;
+                
+               case "LlaveHabitacion":
+                    
+                    colisionaConObjeto = false;
+                    tieneLlaveHabitacion = true;
+                    Destroy(llaveHabitacion);
+                    break;
+                
+               case "PuertaTrastero":
+                    
+                    colisionaConObjeto = false;
+                    ActivarGiro();
+                    break;
+                
+                case "CofreCandelabro":
+                    
+                    colisionaConObjeto = false;
+                    AbrirCofre();
+                    break;
+
+                case "PuertaHabitacion":
+                    
+                    colisionaConObjeto = false;
+                    ActivarGiroHab();
+                    break;
             }
                 
 
@@ -93,11 +129,21 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMovement()
     {
-        moving = false;
+        // Obtener las entradas de movimiento
+         horInput = Input.GetAxisRaw("Horizontal") * speed;
+         verInput = Input.GetAxisRaw("Vertical") * speed;
 
-        // Inputs
-        float horInput = Input.GetAxisRaw("Horizontal") * speed;
-        float verInput = Input.GetAxisRaw("Vertical") * speed;
+        // Si el jugador tiene alguna entrada de movimiento, establece 'moving' en true
+        if (horInput != 0 || verInput != 0)
+        {
+            moving = true;
+            anim.SetBool("moving", moving);
+        }
+        else
+        {
+            moving = false;
+            anim.SetBool("moving", moving);
+        }
 
         // Dirección de la cámara
         Vector3 camForward = cam.forward;
@@ -127,18 +173,12 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void AttackEnded()
-    {
-
-        canAttack = true;
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Key"))
         {
             colisionaConObjeto = true;
-            objetoColisionado = other.gameObject; // Guardamos el GameObject que colisionó
+            objetoColisionado = other.gameObject; // Guardamos el GameObject con el que colisiona
 
 
         }
@@ -146,20 +186,40 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("KeyCofre"))
         {
             colisionaConObjeto = true;
-            objetoColisionado = other.gameObject; // Guardamos el GameObject que colisionó
+            objetoColisionado = other.gameObject; 
+
+
+        }
+        
+        if (other.gameObject.CompareTag("LlaveHabitacion"))
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject; 
 
 
         }
 
         if (other.gameObject.CompareTag("PuertaTrastero") && tieneLlaveTrastero)
         {
-            ActivarGiro();
+            //ActivarGiro();
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+
+        }
+        
+        if (other.gameObject.CompareTag("PuertaHabitacion") && tieneLlaveHabitacion)
+        {
+            ActivarGiroHab();
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
 
         }
 
         if (other.gameObject.CompareTag("CofreCandelabro") && tieneLlaveCofre)
         {
-             AbrirCofre();
+             
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
 
         }
 
@@ -169,7 +229,7 @@ public class PlayerController : MonoBehaviour
             TrozosDePapel();
             // Desactiva el trozo de papel recogido
 
-            other.gameObject.SetActive(false);
+            Destroy(other.gameObject);
         }
     }
 
@@ -183,8 +243,9 @@ public class PlayerController : MonoBehaviour
         // Verifica si se han recogido todos los trozos de papel
         if (trozosDePapelRecolectados == 3)
         {
-            gameManager.mapPanelUp();
+            //gameManager.mapPanelUp();
             mapaActivo = true;
+            llaveCofre.SetActive(true);
 
             
         }
@@ -196,8 +257,18 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(OpenDoor());
 
         }
+    }
+    
+    public void ActivarGiroHab()
+    {
+        if (isOpenedHab == false)
+        {
+            StartCoroutine(OpenDoorHab());
 
-    }public void AbrirCofre()
+        }
+    }
+    
+    public void AbrirCofre()
     {
         if (isChestOpened == false)
         {
@@ -224,7 +295,27 @@ public class PlayerController : MonoBehaviour
 
         puertaTrastero.transform.rotation = targetRotation;
 
-    }public IEnumerator OpenChest()
+    }
+    
+    public IEnumerator OpenDoorHab()
+    {
+        isOpenedHab = true;
+        Quaternion startRotation = puertaHabitacion.transform.rotation;
+        Quaternion targetRotation = Quaternion.Euler(0, -openAngle, 0) * startRotation;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < 1f)
+        {
+            puertaHabitacion.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime);
+            elapsedTime += Time.deltaTime * openSpeed;
+            yield return null;
+        }
+
+        puertaHabitacion.transform.rotation = targetRotation;
+
+    }
+    
+    public IEnumerator OpenChest()
     {
         isChestOpened = true;
         Quaternion startRotation = tapaCofre.transform.rotation;
@@ -237,16 +328,14 @@ public class PlayerController : MonoBehaviour
             tapaCofre.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime);
             elapsedTime += Time.deltaTime * openSpeed;
             vela.SetActive(true);
+            llaveHabitacion.SetActive(true);
             yield return null;
         }
 
         tapaCofre.transform.rotation = targetRotation;
         chestOpened = true;
 
-        if (chestOpened)
-        {
-            
-        }
+        
     }
 
         

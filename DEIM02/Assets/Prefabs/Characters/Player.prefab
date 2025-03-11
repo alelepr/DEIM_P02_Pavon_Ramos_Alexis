@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4039024791704011222}
   - component: {fileID: 1669304476143806695}
   - component: {fileID: 423911441355072568}
-  - component: {fileID: 4392580725771784934}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -61,9 +60,16 @@ MonoBehaviour:
   tieneLlaveCofre: 0
   puertaTrastero: {fileID: 0}
   trozosDePapelRecolectados: 0
-  panelClave: {fileID: 0}
+  mapPanel: {fileID: 0}
   trozosDePapel: []
   tapaCofre: {fileID: 0}
+  isOpened: 0
+  isChestOpened: 0
+  openAngle: 90
+  openSpeed: 0.4
+  vela: {fileID: 0}
+  chestOpened: 0
+  mapaActivo: 0
 --- !u!54 &1669304476143806695
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -114,21 +120,6 @@ CapsuleCollider:
   m_Height: 2.3501697
   m_Direction: 1
   m_Center: {x: 0, y: 1.110851, z: 0}
---- !u!114 &4392580725771784934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4641271222843069155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d068c740d8214c34d82f62b69fd01525, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectGrabbed: 0
-  objectParent: {fileID: 7101930883817246833}
-  colliderDelObjectoTrigger: {fileID: 0}
 --- !u!1 &6407688630743032691
 GameObject:
   m_ObjectHideFlags: 0

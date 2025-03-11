@@ -12,6 +12,8 @@ TagManager:
   - CofreCandelabro
   - KeyCofre
   - Candle
+  - LlaveHabitacion
+  - PuertaHabitacion
   layers:
   - Default
   - TransparentFX
