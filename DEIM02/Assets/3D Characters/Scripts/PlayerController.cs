@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using JetBrains.Annotations;
-using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,49 +8,65 @@ public class PlayerController : MonoBehaviour
     private bool moving;
     Rigidbody rb;
 
+    // Cámara
     [SerializeField] Transform cam;
 
+    // Llaves
     [SerializeField] GameObject llaveTrastero;
     [SerializeField] GameObject llaveCofre;
     [SerializeField] GameObject llaveHabitacion;
 
     public bool colisionaConObjeto;
 
+    // ComprobantesLlave
     public bool tieneLlaveTrastero;
     public bool tieneLlaveCofre;
     public bool tieneLlaveHabitacion;
 
+    // Puertas
     [SerializeField] GameObject puertaTrastero;
     [SerializeField] GameObject puertaHabitacion;
     [SerializeField] GameObject tapaCofre;
 
+    // ComprobantesPuertas
     public bool isOpened;
     public bool isOpenedHab;
     public bool isChestOpened;
 
+    // Datos de apertura de puertas y cofre
     public float openAngle = 90f;
     public float openSpeed = 0.4f;
 
     private GameObject objetoColisionado;
 
+    // TrozosDeMapa
     public GameObject[] trozosDePapel; // Los tres trozos de papel en el juego
     public int trozosDePapelRecolectados = 0;
 
+    // Interfaz
     [SerializeField] public GameObject mapPanel;
     [SerializeField] public GameObject mLetter;
     [SerializeField] public GameObject buttonPickUp;
     [SerializeField] public GameObject buttonOpen;
+    [SerializeField] public GameObject panelBotonNPC; // Panel del botón del NPC
+    [SerializeField] public GameObject panelNPC; // Panel del NPC
+    public bool panelNPCActivado; // Si el panel está activado o no
+    private bool cercaDelNpc = false; // Si el jugador está cerca del NPC
+    public bool panelCerrado; // Si el panel ya ha sido cerrado
+    private bool panelBotonNPCActivado = false; // Para asegurarse de que el panelBotonNPC solo aparezca una vez
 
+    // Movimiento
     float horInput;
     float verInput;
 
+    // Vela
     public GameObject vela;
 
     GameManager gameManager;
 
     public bool mapaActivo;
 
-    //Raycast
+    // Raycast
     public Transform raycastPos;
     public float distance;
     public LayerMask raycastMask;
@@ -67,12 +81,15 @@ public class PlayerController : MonoBehaviour
         vela.SetActive(false);
         mapPanel.SetActive(false);
         anim = GetComponent<Animator>();
-        speed = 10;
+        speed = 6;
+        panelBotonNPC.SetActive(false); // Asegurarse de que el panel del botón NPC esté desactivado al inicio
+        panelCerrado = true;
     }
 
     void Update()
     {
         PlayerMovement();
+
         RaycastHit hit;
         if (Physics.Raycast(raycastPos.position, Vector3.down, out hit, distance, raycastMask))
         {
@@ -82,17 +99,33 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             mapaActivo = !mapaActivo;
-
-            if (mapaActivo)
-            {
-                mapPanel.SetActive(true);
-            }
-            else
-            {
-                mapPanel.SetActive(false);
-            }
+            mapPanel.SetActive(mapaActivo);
         }
 
+        // Activar panelBotonNPC cuando el jugador está cerca del NPC y solo una vez
+        if (cercaDelNpc && !panelBotonNPCActivado)
+        {
+            panelBotonNPC.SetActive(true);
+            panelBotonNPCActivado = true; // Evitar que se active más de una vez
+        }
+
+        if (Input.GetKeyDown(KeyCode.F) && cercaDelNpc && !panelNPCActivado && panelCerrado)
+        {
+            panelBotonNPC.SetActive(false); // Desactivar panelBotonNPC
+            panelNPC.SetActive(true); // Activar el panel del NPC
+            panelNPCActivado = true; // El panel está activado
+            speed = 0; // Desactiva la velocidad cuando el panel está activo
+            panelCerrado = false; // El panel no está cerrado
+        }
+        else if (Input.GetKeyDown(KeyCode.F) && cercaDelNpc && panelNPCActivado) // Si está cerca y el panel está activado
+        {
+            panelNPC.SetActive(false); // Desactivar el panel NPC
+            panelNPCActivado = false; // El panel ya no está activado
+            speed = 6; // Restaura la velocidad cuando el panel se cierra
+            panelCerrado = true; // El panel está cerrado
+        }
+
+        // Lógica de otras interacciones, como recoger objetos, abrir puertas, etc.
         if (Input.GetKeyDown(KeyCode.F) && colisionaConObjeto)
         {
             switch (objetoColisionado.tag)
@@ -148,6 +181,8 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMovement()
     {
+        if (panelNPCActivado) return; // Si el panel está activo, no permite mover al jugador
+
         horInput = Input.GetAxisRaw("Horizontal") * speed;
         verInput = Input.GetAxisRaw("Vertical") * speed;
 
@@ -187,75 +222,37 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Key"))
+        if (other.CompareTag("NPC"))
+        {
+            cercaDelNpc = true; // El jugador entra en la zona del NPC
+        }
+
+        // Lógica para otros objetos que el jugador puede recoger o interactuar
+        if (other.CompareTag("Key") || other.CompareTag("KeyCofre") || other.CompareTag("LlaveHabitacion"))
         {
             colisionaConObjeto = true;
             objetoColisionado = other.gameObject;
             buttonPickUp.SetActive(true);
         }
+    }
 
-        if (other.gameObject.CompareTag("KeyCofre"))
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("NPC"))
         {
-            colisionaConObjeto = true;
-            objetoColisionado = other.gameObject;
-            buttonPickUp.SetActive(true);
-        }
-
-        if (other.gameObject.CompareTag("LlaveHabitacion"))
-        {
-            colisionaConObjeto = true;
-            objetoColisionado = other.gameObject;
-            buttonPickUp.SetActive(true);
-        }
-
-        if (other.gameObject.CompareTag("PuertaTrastero") && tieneLlaveTrastero)
-        {
-            colisionaConObjeto = true;
-            objetoColisionado = other.gameObject;
-            if (isOpened)
+            cercaDelNpc = false; // El jugador sale de la zona del NPC
+            if (panelNPCActivado)
             {
-                buttonOpen.SetActive(false);
+                panelNPC.SetActive(false); // Cierra el panel al salir
+                panelNPCActivado = false;
+                speed = 10; // Restaura la velocidad al salir
+                panelCerrado = true; // El panel se cierra
             }
-            else
+            if (panelBotonNPCActivado)
             {
-                buttonOpen.SetActive(true);
+                panelBotonNPC.SetActive(false); // Si el jugador sale del área, desactivamos el panelBotonNPC
+                panelBotonNPCActivado = false; // Aseguramos que no aparezca de nuevo
             }
-        }
-
-        if (other.gameObject.CompareTag("PuertaHabitacion") && tieneLlaveHabitacion)
-        {
-            ActivarGiroHab();
-            colisionaConObjeto = true;
-            objetoColisionado = other.gameObject;
-            if (isOpenedHab)
-            {
-                buttonOpen.SetActive(false);
-            }
-            else
-            {
-                buttonOpen.SetActive(true);
-            }
-        }
-
-        if (other.gameObject.CompareTag("CofreCandelabro") && tieneLlaveCofre)
-        {
-            colisionaConObjeto = true;
-            objetoColisionado = other.gameObject;
-            if (isChestOpened)
-            {
-                buttonOpen.SetActive(false);
-            }
-            else
-            {
-                buttonOpen.SetActive(true);
-            }
-        }
-
-        if (other.CompareTag("TrozosDePapel"))
-        {
-            colisionaConObjeto = true;
-            objetoColisionado = other.gameObject;
-            buttonPickUp.SetActive(true);
         }
     }
 
