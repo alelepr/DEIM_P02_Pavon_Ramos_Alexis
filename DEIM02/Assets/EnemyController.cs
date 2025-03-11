@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,40 +8,57 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Transform player;
+
+
+    public bool sePuedeMover;
+
+
+
     void Start()
     {
+        sePuedeMover = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        agent.SetDestination(player.position);
-        if(Input.GetKey(KeyCode.Y))
-        {
-            agent.speed = 3;
 
+        EnemyMovement();
+        
+        
+    }
+
+    private void EnemyMovement()
+    {
+
+
+        if (sePuedeMover)
+        {
+
+            agent.SetDestination(player.position);
+            
+            agent.isStopped = false;
+
+            if (agent.isOnOffMeshLink)
+            {
+                if (agent.velocity.y > 0)
+                {
+                    Debug.Log("Subiendo");
+                    //animacion de subir
+
+                }
+                else
+                {
+                    Debug.Log("Bajando");
+                    //animacion de bajar
+                }
+            }
         }
         else
-        { 
-        
-            agent.speed = 1;
-            //agent.isStopped = true;
-        }
-
-        if(agent.isOnOffMeshLink)
         {
-            if (agent.velocity.y > 0)
-            {
-                Debug.Log("Subiendo");
-                //animacion de subir
-
-            }
-            else
-            {
-                Debug.Log("Bajando");
-                //animacion de bajar
-            }
+            agent.isStopped = true;
         }
+       
         
     }
 }

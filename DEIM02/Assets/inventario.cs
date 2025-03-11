@@ -32,7 +32,7 @@ public class Inventario : MonoBehaviour
 
     private void OnTriggerCandle(Collider other)
     {
-        if (playerController != null && playerController.chestOpened)
+        if (playerController != null && playerController.isChestOpened)
         {
             if (Input.GetKeyDown(KeyCode.F) && !objectGrabbed && other.gameObject.CompareTag("Candle"))
             {
@@ -47,10 +47,6 @@ public class Inventario : MonoBehaviour
                     c.enabled = false;
                 }
             }
-        }
-        else
-        {
-            Debug.Log("No puedes recoger la vela hasta que el cofre esté abierto.");
         }
     }
 

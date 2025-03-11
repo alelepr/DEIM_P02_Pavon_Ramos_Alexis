@@ -129,20 +129,7 @@ public class GameManager : MonoBehaviour
 
     }
     
-    public void mapPanelUp()
-    {
-        if (mapIsActive == false)
-        {
-            mapIsActive = true;
-            mapPanel.SetActive(true);
-        }
-        else
-        {
-            mapIsActive = false;
-
-        }
-
-    }
+   
       
 
     public void ControlMenuOut()

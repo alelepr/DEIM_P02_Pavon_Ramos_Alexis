@@ -4,13 +4,17 @@ public class OutlinePulse : MonoBehaviour
 {
     [SerializeField] private Material outlineMaterial; // Asigna el material con el slider en el Inspector
 
-    private const string OutlineProperty = "_Thickness"; // Nombre exacto de la propiedad en el Shader
+    private const string OutlineProperty = "_OutlineThickness"; // Nombre exacto de la propiedad en el Shader
     private const float MinOutline = 0.008f;
     private const float MaxOutline = 0.016f;
     private const float PulseSpeed = 2f;
 
-    private bool isActive;
+    public bool isActive;
 
+    private void Start()
+    {
+        outlineMaterial.SetFloat(OutlineProperty, 0f);
+    }
     void Update()
     {
         if (isActive && outlineMaterial != null)
@@ -33,7 +37,7 @@ public class OutlinePulse : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isActive = false;
-            //outlineMaterial.SetFloat(0f, 0f); // Reinicia el grosor al mínimo
+            outlineMaterial.SetFloat(OutlineProperty, 0f); // Reinicia el grosor al mínimo
         }
     }
 }
