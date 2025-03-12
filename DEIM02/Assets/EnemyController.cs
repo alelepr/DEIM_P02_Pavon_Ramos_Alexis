@@ -18,7 +18,7 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         // Comprobar si el panel del jugador ha sido cerrado
-        if (playerController.panelCerrado)
+        if (playerController.npcPuedeMoverse)
         {
             sePuedeMover = true; // Permitir que el NPC se mueva si el panel ha sido cerrado
         }

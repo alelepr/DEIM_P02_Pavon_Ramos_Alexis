@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public GameObject panelNPC; // Panel del NPC
     public bool panelNPCActivado; // Si el panel está activado o no
     private bool cercaDelNpc = false; // Si el jugador está cerca del NPC
-    public bool panelCerrado; // Si el panel ya ha sido cerrado
+    public bool npcPuedeMoverse; // Si el panel ya ha sido cerrado
     private bool panelBotonNPCActivado = false; // Para asegurarse de que el panelBotonNPC solo aparezca una vez
 
     // Movimiento
@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         speed = 6;
         panelBotonNPC.SetActive(false); // Asegurarse de que el panel del botón NPC esté desactivado al inicio
-        panelCerrado = true;
+        npcPuedeMoverse = false;
     }
 
     void Update()
@@ -109,20 +109,20 @@ public class PlayerController : MonoBehaviour
             panelBotonNPCActivado = true; // Evitar que se active más de una vez
         }
 
-        if (Input.GetKeyDown(KeyCode.F) && cercaDelNpc && !panelNPCActivado && panelCerrado)
+        if (Input.GetKeyDown(KeyCode.F) && cercaDelNpc && !panelNPCActivado)
         {
             panelBotonNPC.SetActive(false); // Desactivar panelBotonNPC
             panelNPC.SetActive(true); // Activar el panel del NPC
             panelNPCActivado = true; // El panel está activado
             speed = 0; // Desactiva la velocidad cuando el panel está activo
-            panelCerrado = false; // El panel no está cerrado
+            npcPuedeMoverse = false; // El panel no está cerrado
         }
         else if (Input.GetKeyDown(KeyCode.F) && cercaDelNpc && panelNPCActivado) // Si está cerca y el panel está activado
         {
             panelNPC.SetActive(false); // Desactivar el panel NPC
             panelNPCActivado = false; // El panel ya no está activado
             speed = 6; // Restaura la velocidad cuando el panel se cierra
-            panelCerrado = true; // El panel está cerrado
+            npcPuedeMoverse = true; // El panel está cerrado
         }
 
         // Lógica de otras interacciones, como recoger objetos, abrir puertas, etc.
@@ -246,7 +246,7 @@ public class PlayerController : MonoBehaviour
                 panelNPC.SetActive(false); // Cierra el panel al salir
                 panelNPCActivado = false;
                 speed = 10; // Restaura la velocidad al salir
-                panelCerrado = true; // El panel se cierra
+                npcPuedeMoverse = true; // El panel se cierra
             }
             if (panelBotonNPCActivado)
             {
