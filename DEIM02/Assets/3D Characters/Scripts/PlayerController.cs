@@ -119,7 +119,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.F) && cercaDelNpc && panelNPCActivado) // Si está cerca y el panel está activado
         {
-            panelNPC.SetActive(false); // Desactivar el panel NPC
+            Destroy(panelNPC); // Desactivar el panel NPC
+            Destroy(panelBotonNPC); // Desactivar el panel NPC
             panelNPCActivado = false; // El panel ya no está activado
             speed = 6; // Restaura la velocidad cuando el panel se cierra
             npcPuedeMoverse = true; // El panel está cerrado

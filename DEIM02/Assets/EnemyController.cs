@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,12 +8,18 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Transform player;
     [SerializeField] private PlayerController playerController; // Referencia al PlayerController
+    [SerializeField] public Animator anim;
+ 
+
 
     public bool sePuedeMover;
 
     void Start()
     {
         sePuedeMover = false; // El NPC no se mueve inicialmente
+        anim = GetComponent<Animator>();
+        
+
     }
 
     void Update()
@@ -21,6 +28,19 @@ public class EnemyController : MonoBehaviour
         if (playerController.npcPuedeMoverse)
         {
             sePuedeMover = true; // Permitir que el NPC se mueva si el panel ha sido cerrado
+            
+        }
+
+        
+
+        if (agent.speed == 0)
+        {
+            anim.SetBool("moving", true);
+        }
+        else
+        {
+            anim.SetBool("moving", false);
+
         }
 
         EnemyMovement();
@@ -33,6 +53,8 @@ public class EnemyController : MonoBehaviour
             // El NPC puede moverse hacia el jugador
             agent.SetDestination(player.position);
             agent.isStopped = false;
+            anim.SetBool("moving", true);
+            agent.speed = 5;
 
             // Lógica para las animaciones de subir o bajar si el NPC está sobre un OffMeshLink
             if (agent.isOnOffMeshLink)
@@ -53,6 +75,8 @@ public class EnemyController : MonoBehaviour
         {
             // El NPC no puede moverse hasta que el panel esté cerrado
             agent.isStopped = true;
+            anim.SetBool("moving", false);
+            agent.speed = 0;
         }
     }
 }
