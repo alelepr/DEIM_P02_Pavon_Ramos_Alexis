@@ -223,6 +223,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
+        if (other.CompareTag("NPC"))
+        {
+            cercaDelNpc = true; // El jugador entra en la zona del NPC
+        }
         if (other.gameObject.CompareTag("Key"))
         {
             colisionaConObjeto = true;
@@ -307,6 +312,15 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+
+        if (other.CompareTag("Key") || other.CompareTag("KeyCofre") || other.CompareTag("CofreCandelabro")|| other.CompareTag("TrozosDePapel")
+            || other.CompareTag("LlaveHabitacion")|| other.CompareTag("PuertaTrastero")|| other.CompareTag("PuertaHabitacion"))
+        {
+            buttonPickUp.SetActive(false);
+            buttonOpen.SetActive(false);
+
+        }
+
         if (other.CompareTag("NPC"))
         {
             cercaDelNpc = false; // El jugador sale de la zona del NPC

@@ -15,6 +15,7 @@ TagManager:
   - LlaveHabitacion
   - PuertaHabitacion
   - NPC
+  - ParadaNPC
   layers:
   - Default
   - TransparentFX

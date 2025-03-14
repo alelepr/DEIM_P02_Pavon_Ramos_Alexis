@@ -9,7 +9,10 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private PlayerController playerController; // Referencia al PlayerController
     [SerializeField] public Animator anim;
- 
+    
+
+
+
 
 
     public bool sePuedeMover;
@@ -19,6 +22,8 @@ public class EnemyController : MonoBehaviour
         sePuedeMover = false; // El NPC no se mueve inicialmente
         anim = GetComponent<Animator>();
         
+
+
 
     }
 
@@ -31,17 +36,7 @@ public class EnemyController : MonoBehaviour
             
         }
 
-        
-
-        if (agent.speed == 0)
-        {
-            anim.SetBool("moving", true);
-        }
-        else
-        {
-            anim.SetBool("moving", false);
-
-        }
+               
 
         EnemyMovement();
     }
@@ -77,6 +72,25 @@ public class EnemyController : MonoBehaviour
             agent.isStopped = true;
             anim.SetBool("moving", false);
             agent.speed = 0;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("ParadaNPC"))
+        {
+            agent.isStopped = true;
+            anim.SetBool("moving", false);
+            agent.speed = 0;
+        }
+        else
+        {
+            
+            agent.SetDestination(player.position);
+            agent.isStopped = false;
+            anim.SetBool("moving", true);
+            agent.speed = 5;
+
         }
     }
 }
