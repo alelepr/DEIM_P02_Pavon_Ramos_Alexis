@@ -223,17 +223,85 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("NPC"))
-        {
-            cercaDelNpc = true; // El jugador entra en la zona del NPC
-        }
-
-        // Lógica para otros objetos que el jugador puede recoger o interactuar
-        if (other.CompareTag("Key") || other.CompareTag("KeyCofre") || other.CompareTag("LlaveHabitacion"))
+        if (other.gameObject.CompareTag("Key"))
         {
             colisionaConObjeto = true;
             objetoColisionado = other.gameObject;
             buttonPickUp.SetActive(true);
+        }
+
+        if (other.gameObject.CompareTag("KeyCofre"))
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            buttonPickUp.SetActive(true);
+        }
+
+        if (other.gameObject.CompareTag("LlaveHabitacion"))
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            buttonPickUp.SetActive(true);
+        }
+
+        if (other.gameObject.CompareTag("PuertaTrastero") && tieneLlaveTrastero)
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            if (isOpened)
+            {
+                buttonOpen.SetActive(false);
+            }
+            else
+            {
+                buttonOpen.SetActive(true);
+            }
+        }
+
+        if (other.gameObject.CompareTag("PuertaHabitacion") && tieneLlaveHabitacion)
+        {
+            ActivarGiroHab();
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            if (isOpenedHab)
+            {
+                buttonOpen.SetActive(false);
+            }
+            else
+            {
+                buttonOpen.SetActive(true);
+            }
+        }
+
+        if (other.gameObject.CompareTag("CofreCandelabro") && tieneLlaveCofre)
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            if (isChestOpened)
+            {
+                buttonOpen.SetActive(false);
+            }
+            else
+            {
+                buttonOpen.SetActive(true);
+            }
+        }
+
+        if (other.CompareTag("TrozosDePapel"))
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            buttonPickUp.SetActive(true);
+        }
+    }
+
+    public void TrozosDePapel()
+    {
+        trozosDePapelRecolectados++;
+
+        if (trozosDePapelRecolectados == 3)
+        {
+            mLetter.SetActive(true);
         }
     }
 
@@ -257,15 +325,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void TrozosDePapel()
-    {
-        trozosDePapelRecolectados++;
-
-        if (trozosDePapelRecolectados == 3)
-        {
-            mLetter.SetActive(true);
-        }
-    }
+    
 
     public void ActivarGiro()
     {
