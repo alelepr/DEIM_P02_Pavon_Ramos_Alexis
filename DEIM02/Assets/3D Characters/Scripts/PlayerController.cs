@@ -101,9 +101,17 @@ public class PlayerController : MonoBehaviour
             mapaActivo = !mapaActivo;
             mapPanel.SetActive(mapaActivo);
         }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
+        
+
+        if ((gameManager.paused) && (mapaActivo==false)) {
+           
+            Cursor.lockState = CursorLockMode.Confined;
+
+        }
+        
+        if ((gameManager.paused) && (mapaActivo)) {
+           
+            Cursor.lockState = CursorLockMode.Confined;
 
         }
 

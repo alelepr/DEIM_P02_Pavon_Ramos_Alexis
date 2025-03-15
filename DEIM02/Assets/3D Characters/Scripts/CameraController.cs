@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -9,6 +10,7 @@ public class CameraController : MonoBehaviour
     public Vector2 sensitivity;
     private new Camera camera;
     private Vector2 nearPlaneSize;
+    public GameManager gameManager;
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -19,6 +21,8 @@ public class CameraController : MonoBehaviour
 
         CalculateNearPlaneSize();
     }
+
+    
 
     private void CalculateNearPlaneSize()
     {
@@ -46,6 +50,15 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.paused)
+        {
+           // Cursor.lockState = CursorLockMode.None; // Cursor completamente libre
+        }
+        else
+        {
+            //Cursor.lockState = CursorLockMode.Locked;
+
+        }
         float hor = Input.GetAxis("Mouse X");
 
         if (hor != 0)
