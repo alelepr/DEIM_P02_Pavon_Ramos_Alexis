@@ -16,6 +16,7 @@ TagManager:
   - PuertaHabitacion
   - NPC
   - ParadaNPC
+  - Cama
   layers:
   - Default
   - TransparentFX

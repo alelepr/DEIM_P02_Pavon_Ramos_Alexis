@@ -101,6 +101,11 @@ public class PlayerController : MonoBehaviour
             mapaActivo = !mapaActivo;
             mapPanel.SetActive(mapaActivo);
         }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+
+        }
 
         // Activar panelBotonNPC cuando el jugador está cerca del NPC y solo una vez
         if (cercaDelNpc && !panelBotonNPCActivado)
@@ -318,6 +323,7 @@ public class PlayerController : MonoBehaviour
         {
             buttonPickUp.SetActive(false);
             buttonOpen.SetActive(false);
+            objetoColisionado = null;
 
         }
 
