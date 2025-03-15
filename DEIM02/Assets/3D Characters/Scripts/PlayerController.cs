@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public GameObject mapPanel;
     [SerializeField] public GameObject mLetter;
     [SerializeField] public GameObject buttonPickUp;
+    [SerializeField] public GameObject buttonLay;
     [SerializeField] public GameObject buttonOpen;
     [SerializeField] public GameObject panelBotonNPC; // Panel del botón del NPC
     [SerializeField] public GameObject panelNPC; // Panel del NPC
@@ -62,7 +63,7 @@ public class PlayerController : MonoBehaviour
     // Vela
     public GameObject vela;
 
-    GameManager gameManager;
+    [SerializeField] GameManager gameManager;
 
     public bool mapaActivo;
 
@@ -189,6 +190,11 @@ public class PlayerController : MonoBehaviour
                     TrozosDePapel();
                     Destroy(objetoColisionado);
                     break;
+                
+                case "Cama":
+                    buttonLay.SetActive(false);
+                    gameManager.EndGame();
+                    break;
             }
         }
     }
@@ -311,6 +317,14 @@ public class PlayerController : MonoBehaviour
             objetoColisionado = other.gameObject;
             buttonPickUp.SetActive(true);
         }
+        
+        if (other.CompareTag("Cama"))
+        {
+            colisionaConObjeto = true;
+            objetoColisionado = other.gameObject;
+            buttonLay.SetActive(true);
+            Debug.Log("cama");
+        }
     }
 
     public void TrozosDePapel()
@@ -327,10 +341,11 @@ public class PlayerController : MonoBehaviour
     {
 
         if (other.CompareTag("Key") || other.CompareTag("KeyCofre") || other.CompareTag("CofreCandelabro")|| other.CompareTag("TrozosDePapel")
-            || other.CompareTag("LlaveHabitacion")|| other.CompareTag("PuertaTrastero")|| other.CompareTag("PuertaHabitacion"))
+            || other.CompareTag("LlaveHabitacion")|| other.CompareTag("PuertaTrastero")|| other.CompareTag("PuertaHabitacion")|| other.CompareTag("Cama"))
         {
             buttonPickUp.SetActive(false);
             buttonOpen.SetActive(false);
+            buttonLay.SetActive(false);
             objetoColisionado = null;
 
         }

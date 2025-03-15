@@ -33,6 +33,12 @@ public class GameManager : MonoBehaviour
             case "MainMenu":
                 AudioManager.PlayMainMenuMusic();
                 break;
+            
+            case "End":
+                AudioManager.PlayMainMenuMusic();
+                Cursor.lockState = CursorLockMode.Confined;
+
+                break;
 
 
             case "Game":
@@ -68,6 +74,12 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1.0f;
         SceneManager.LoadScene("MainMenu");
+    }
+    
+    public void EndGame()
+    {
+        Time.timeScale = 0f;
+        SceneManager.LoadScene("End");
     }
 
     public void Continue()
