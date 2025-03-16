@@ -134,8 +134,9 @@ public class AudioManager : MonoBehaviour
 
         if (!instance.audioSourceBGM.isPlaying)
         {
-            instance.audioSourceBGM.Play();
             instance.mainMenuAudioSource.Stop();
+            instance.audioSourceBGM.Play();
+            
             
         }
 
